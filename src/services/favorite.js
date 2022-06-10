@@ -1,20 +1,23 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import api from "./api";
+import api from './api'
 
-export async function getFavorite() {
-  const data = await AsyncStorage.getItem('@favCategory');
+export async function getFavorite(){
+  const data = await AsyncStorage.getItem('@favCategory')
+
   if(data !== null) {
-    const response = await api.get(`/api/categories/${data}?fileds=name&populate=posts.posts.cover`)
-    return response.data?.data?.attributes?.data;
-  } else{
-    return [];
+    const resp = await api.get(`api/categories/${data}?fields=name&populate=posts,posts.cover`)
+
+    return resp.data?.data?.attributes?.posts?.data
+  } else {
+
+    return []
   }
 }
 
-export async function setFavorite(category) {
+export async function setFavorite(category){
   await AsyncStorage.setItem('@favCategory', String(category))
 
-  const response = await getFavorite();
+  const res = await getFavorite()
 
-  return response;
+  return res
 }

@@ -30,6 +30,11 @@ export default function Home() {
     favorite();
   },[]);
 
+  async function getListPost(){
+    const response = await api.get("/api/posts");
+    return response.data.data;
+  }
+
   async function handleFavorite(id) {
     const response = await setFavorite(id)
 
