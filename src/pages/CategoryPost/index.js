@@ -43,7 +43,6 @@ export default function CategoryPost(){
             </TouchableOpacity>
         </View>
       )}
-
       <FlatList 
         showsVerticalScrollIndicator={false}
         style = {{ flex: 1 }}
