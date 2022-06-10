@@ -7,6 +7,7 @@ import api from '../../services/api';
 
 import CategoryItem from '../../components/CategoryItem';
 import FavoritePost from '../../components/FavoritePost';
+import PostItem from '../../components/PostItem';
 import { getFavorite, setFavorite } from '../../services/favorite';
 
 export default function Home() {
@@ -14,25 +15,29 @@ export default function Home() {
   const [categories, setCategories] = useState([]);
   const [favCategory, setFavCategory] = useState([]);
 
-  useEffect(() => {
-    async function loadData() {
-      const category = await api.get("/api/categories?populate=icon");
-      setCategories(category.data.data);
+  const [posts, setPosts] = useState([]);
+
+  useEffect( () => {
+    async function loadData(){
+        await getListPosts();
+
+        const category = await api.get("api/categories?populate=icon")
+        setCategories(category.data.data)
     }
     loadData();
-  }, []);
+  }, [])
 
-  useEffect(() => {
-    async function favorite() {
-      const response = await getFavorite()
-      setFavCategory(response);
+  useEffect( () => {
+    async function favorite(){
+        const response = await getFavorite()
+        setFavCategory(response);
     }
     favorite();
-  },[]);
+  }, [])
 
   async function getListPost(){
-    const response = await api.get("/api/posts");
-    return response.data.data;
+    const response = await api.get("/api/posts?populate=cover&sort=createdAt:desc");
+    setPosts(response.data.data);
   }
 
   async function handleFavorite(id) {
@@ -80,7 +85,22 @@ export default function Home() {
             renderItem={({item}) => (<FavoritePost data={item} />)}
           />
         )}
-        <Text style={[styles.title, {marginTop: favCategory.length > 0 ? 14 : 46}]}>Conteúdos em alta</Text>
+        <Text 
+          style={[
+            styles.title, 
+            {marginTop: favCategory.length > 0 ? 14 : 46}
+          ]}
+        >
+          Conteúdos em alta
+        </Text>
+
+        <FlatList 
+          style={{ flex: 1, paddingHorizontal: 18 }}
+          showsVerticalScrollIndicator={false}
+          data={posts}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({item}) => <PostItem data={item}/>}
+        />
       </View>
     </SafeAreaView>
   );
